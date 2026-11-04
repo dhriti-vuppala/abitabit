@@ -1,0 +1,122 @@
+FOUR QUEENS PROBLEM USING SWI-PROLOG
+
+STEP 1: DOWNLOAD AND INSTALL SWI-PROLOG
+
+1. Open your web browser.
+2. Search for "SWI-Prolog Download".
+3. Visit the official website: https://www.swi-prolog.org/
+4. Download the SWI-Prolog installer for Windows.
+5. Run the downloaded installer.
+6. Follow the installation instructions and complete the installation.
+
+STEP 2: CREATE A PROJECT FOLDER
+
+1. Open Visual Studio Code (VS Code).
+2. Create a new folder named FourQueens.
+3. Open the FourQueens folder in VS Code.
+
+STEP 3: CREATE A PROLOG FILE
+
+1. In VS Code, click on New File.
+2. Name the file four_queens.pl.
+3. Copy the Prolog program given below into the file.
+4. Save the file by pressing Ctrl + S.
+
+STEP 4: PROLOG PROGRAM
+
+Copy the following code into four_queens.pl:
+
+% Entry point
+solve_4_queens(Solution) :-
+Solution = [Q1, Q2, Q3, Q4],
+permutation([1, 2, 3, 4], Solution),
+safe(Solution).
+
+% Check that no two queens attack each other diagonally
+safe([]).
+safe([Queen | Others]) :-
+safe(Others),
+no_attack(Queen, Others, 1).
+
+% Ensure no diagonal attacks
+no_attack(_, [], _).
+no_attack(Q, [Q1 | Qs], D) :-
+Q == Q1 + D,
+Q == Q1 - D,
+D1 is D + 1,
+no_attack(Q, Qs, D1).
+
+STEP 5: OPEN SWI-PROLOG
+
+1. Open the Windows Start menu.
+2. Search for SWI-Prolog.
+3. Click on the SWI-Prolog application to open it.
+4. The Prolog terminal will appear.
+5. You will see the following prompt:
+
+?-
+
+STEP 6: LOAD THE PROLOG PROGRAM
+
+1. In the SWI-Prolog terminal, type the following command:
+
+?- consult('C:/Users/YourName/Desktop/FourQueens/four_queens.pl').
+
+2. Replace the file path with the actual location where you saved your Prolog file.
+
+ALTERNATIVE METHOD:
+
+If the SWI-Prolog terminal is already opened in the project folder, type:
+
+?- [four_queens].
+
+3. Press Enter.
+
+EXPECTED OUTPUT:
+
+true.
+
+This indicates that the Prolog program has been loaded successfully.
+
+STEP 7: EXECUTE THE PROGRAM
+
+1. Type the following query in the Prolog terminal:
+
+?- solve_4_queens(Solution).
+
+2. Press Enter to execute the query.
+
+STEP 8: VIEW THE OUTPUT
+
+The first solution will be displayed as:
+
+Solution = [2, 4, 1, 3] ;
+
+1. Press the semicolon (;) key to request the next solution.
+
+The second solution will be displayed as:
+
+Solution = [3, 1, 4, 2].
+
+2. Press Enter after viewing the second solution.
+
+Prolog will display:
+
+false.
+
+NOTE:
+The output "false" does not indicate an error. It means that Prolog has finished searching and there are no more possible solutions.
+
+EXPECTED OUTPUT
+
+?- solve_4_queens(Solution).
+
+Solution = [2, 4, 1, 3] ;
+
+Solution = [3, 1, 4, 2] ;
+
+false.
+
+RESULT:
+
+Thus, the Four Queens Problem was successfully implemented and executed using SWI-Prolog. The program generates both possible solutions in which no two queens attack each other diagonally.

@@ -1,0 +1,206 @@
+AIM:
+To implement exception handling in Solidity using require(), revert() and assert().
+
+STEP 1: CREATE PROJECT
+
+Open VS Code terminal and execute:
+
+mkdir ExceptionEx1
+cd ExceptionEx1
+truffle init
+
+STEP 2: CREATE SMART CONTRACT
+
+1. Open the contracts folder.
+2. Create a file named Exception1.sol.
+3. Paste the following code:
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.16;
+
+contract ExceptionHandlingExample {
+    uint public balance;
+
+    // Deposit Ether into the contract
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit must be greater than zero");
+        balance += msg.value;
+    }
+
+    // Withdraw Ether from the contract
+    function withdraw(uint amount) public {
+        require(amount > 0, "Amount must be greater than zero");
+        require(amount <= balance, "Insufficient balance");
+
+        // Using revert() for withdrawal limit
+        if (amount > 1 ether) {
+            revert("Withdrawal limit exceeded (max 1 ether allowed)");
+        }
+
+        balance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    // Demonstrate assert()
+    function testAssert() public view returns (string memory) {
+        assert(balance >= 0);
+        return "Assert check passed, balance is non-negative";
+    }
+}
+
+STEP 3: CONFIGURE TRUFFLE
+
+Open truffle-config.js.
+
+Configure the development network:
+
+networks: {
+    development: {
+        host: "127.0.0.1",
+        port: 7545,
+        network_id: "*"
+    }
+},
+
+Configure Solidity compiler:
+
+compilers: {
+    solc: {
+        version: "0.8.16"
+    }
+},
+
+STEP 4: COMPILE THE CONTRACT
+
+Execute in VS Code terminal:
+
+truffle compile
+
+Expected result:
+The contract will be compiled and ExceptionHandlingExample.json
+will be created inside the build/contracts folder.
+
+STEP 5: CREATE MIGRATION FILE
+
+1. Open the migrations folder.
+2. Create a file named 1_initial_Migration.js.
+3. Paste:
+
+const ExMi = artifacts.require("ExceptionHandlingExample");
+
+module.exports = function (deployer) {
+    deployer.deploy(ExMi);
+};
+
+STEP 6: START GANACHE
+
+1. Open Ganache.
+2. Create a new workspace.
+3. Select the Truffle project.
+4. Browse and select truffle-config.js from ExceptionEx1.
+5. Ensure Ganache is running on port 7545.
+
+STEP 7: DEPLOY THE CONTRACT
+
+Execute in VS Code terminal:
+
+truffle migrate --reset --network development
+
+Expected result:
+The smart contract will be deployed successfully on Ganache.
+
+STEP 8: INTERACT WITH THE CONTRACT
+
+Open VS Code terminal and execute:
+
+truffle console --network development
+
+Now execute the following commands one by one inside Truffle console.
+
+1. GET THE DEPLOYED CONTRACT
+
+let instance = await ExceptionHandlingExample.deployed()
+
+2. GET GANACHE ACCOUNTS
+
+let accounts = await web3.eth.getAccounts()
+
+3. CHECK INITIAL BALANCE
+
+(await instance.balance()).toString()
+
+Expected output:
+0
+
+4. DEPOSIT 0.5 ETHER
+
+await instance.deposit({
+    value: web3.utils.toWei("0.5", "ether"),
+    from: accounts[0]
+})
+
+5. CHECK BALANCE
+
+(await instance.balance()).toString()
+
+Expected output:
+500000000000000000
+
+6. WITHDRAW 0.2 ETHER
+
+await instance.withdraw(
+    web3.utils.toWei("0.2", "ether"),
+    {from: accounts[0]}
+)
+
+7. CHECK BALANCE AGAIN
+
+(await instance.balance()).toString()
+
+Expected output:
+300000000000000000
+
+8. TEST require() - INSUFFICIENT BALANCE
+
+await instance.withdraw(
+    web3.utils.toWei("2", "ether"),
+    {from: accounts[0]}
+)
+
+Expected result:
+Transaction fails with "Insufficient balance".
+
+9. TEST revert() - WITHDRAWAL LIMIT
+
+First deposit 2 Ether:
+
+await instance.deposit({
+    value: web3.utils.toWei("2", "ether"),
+    from: accounts[0]
+})
+
+Now withdraw 1.5 Ether:
+
+await instance.withdraw(
+    web3.utils.toWei("1.5", "ether"),
+    {from: accounts[0]}
+)
+
+Expected result:
+Transaction fails with "Withdrawal limit exceeded
+(max 1 ether allowed)".
+
+10. TEST assert()
+
+await instance.testAssert()
+
+Expected output:
+"Assert check passed, balance is non-negative"
+
+STEP 9: RESULT
+
+Thus, the Solidity smart contract demonstrating exception handling
+using require(), revert() and assert() was successfully compiled,
+deployed and tested using VS Code, Truffle and Ganache.
+
+------------------------------------------------------------
